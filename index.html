@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>العد التنازلي لرمضان</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .timer {
+            font-size: 2rem;
+            margin-top: 20%;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>العد التنازلي لرمضان</h1>
+    <div class="timer" id="countdown">
+        يتم الحساب...
+    </div>
+
+    <script>
+        // تاريخ بداية رمضان (مثال: 10 مارس 2024)
+        const ramadanStart = new Date("March 10, 2024 00:00:00").getTime();
+
+        // تحديث العد التنازلي كل ثانية
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const timeLeft = ramadanStart - now;
+
+            // حساب الأيام والساعات والدقائق والثواني
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            // عرض النتيجة
+            document.getElementById("countdown").innerHTML =
+                `${days} يوم - ${hours} ساعة - ${minutes} دقيقة - ${seconds} ثانية`;
+
+            // إنهاء العد عند وصول رمضان
+            if (timeLeft < 0) {
+                clearInterval(timer);
+                document.getElementById("countdown").innerHTML = "رمضان مبارك!";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
