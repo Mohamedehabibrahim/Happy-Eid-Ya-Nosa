@@ -3,35 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>العد التنازلي لرمضان</title>
+    <title>العد التنازلي لرمضان 2025</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
-            background-color: #f4f4f4;
-            color: #333;
+            background: linear-gradient(to bottom, #ffcc70, #ff9472);
+            color: #fff;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+            animation: backgroundFade 10s infinite alternate;
         }
+
+        @keyframes backgroundFade {
+            0% {
+                background: linear-gradient(to bottom, #ffcc70, #ff9472);
+            }
+            50% {
+                background: linear-gradient(to bottom, #ff9472, #f2709c);
+            }
+            100% {
+                background: linear-gradient(to bottom, #f2709c, #ffcc70);
+            }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
         .timer {
             font-size: 2rem;
-            margin-top: 20%;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
-        h1 {
-            font-size: 2.5rem;
-            color: #007bff;
+
+        .footer {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .message {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>العد التنازلي لرمضان</h1>
-    <div class="timer" id="countdown">
-        يتم الحساب...
-    </div>
+    <h1>العد التنازلي لرمضان 2025</h1>
+    <div class="timer" id="countdown">يتم الحساب...</div>
+    <div class="message">🎉 تهنئكم شركة المحتوى بقدوم شهر رمضان المبارك، ونتمنى لكم دوام الصحة والعافية 🌙✨</div>
+    <div class="footer">شركة المحتوى تتمنى لكم رمضانًا مباركًا مليئًا بالخير والبركات</div>
 
     <script>
-        // تاريخ بداية رمضان (مثال: 10 مارس 2024)
-        const ramadanStart = new Date("March 10, 2024 00:00:00").getTime();
+        // تاريخ بداية رمضان لعام 2025 (تقريبًا: 10 مارس 2025)
+        const ramadanStart = new Date("March 10, 2025 00:00:00").getTime();
 
         // تحديث العد التنازلي كل ثانية
         const timer = setInterval(() => {
@@ -44,9 +116,12 @@
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
+            // تحويل الأرقام إلى العربية
+            const arabicNumbers = (num) => num.toString().replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
+
             // عرض النتيجة
             document.getElementById("countdown").innerHTML =
-                `${days} يوم - ${hours} ساعة - ${minutes} دقيقة - ${seconds} ثانية`;
+                `${arabicNumbers(days)} يوم - ${arabicNumbers(hours)} ساعة - ${arabicNumbers(minutes)} دقيقة - ${arabicNumbers(seconds)} ثانية`;
 
             // إنهاء العد عند وصول رمضان
             if (timeLeft < 0) {
