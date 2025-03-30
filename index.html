@@ -10,15 +10,20 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #fffae3;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
             font-family: 'Arial', sans-serif;
             text-align: center;
             overflow: hidden;
+            flex-direction: column;
         }
         .message {
             font-size: 2em;
             font-weight: bold;
-            color: #d63384;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
         }
         .container {
             position: relative;
@@ -49,16 +54,38 @@
                 opacity: 0;
             }
         }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            background: #ff4081;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #e91e63;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="message" id="message"></div>
+        <div class="buttons">
+            <button class="btn" onclick="showMessage('بحبك يا نونو ❤️')">رسالة 1</button>
+            <button class="btn" onclick="showMessage('إنتي أحلى حاجة حصلتلي 😍')">رسالة 2</button>
+            <button class="btn" onclick="showMessage('ربنا يخليكي ليا وميحرمنيش منك 💖')">رسالة 3</button>
+        </div>
         <div class="hearts" id="hearts"></div>
     </div>
     
     <script>
-        const message = "عيد فطر سعيد يا نهاد!\n\nأحبك كثيرًا وأتمنى لك سعادة لا تنتهي ❤️";
+        const message = "عيد فطر سعيد يا نهاد!\n\nبحبك أوي وأتمنى ليكي سعادة مفيهاش نهاية ❤️";
         let i = 0;
         function typeWriter() {
             if (i < message.length) {
@@ -78,6 +105,10 @@
             setTimeout(() => heart.remove(), 4000);
         }
         setInterval(createHeart, 300);
+
+        function showMessage(msg) {
+            document.getElementById("message").innerHTML = msg;
+        }
     </script>
 </body>
 </html>
