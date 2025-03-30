@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كل سنة وانتي طيبة يا روح قلبي ♥</title>
+    <title>عيد فطر سعيد يا نونو</title>
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -14,7 +15,7 @@
             font-family: 'Arial', sans-serif;
             text-align: center;
             overflow: hidden;
-            flex-direction: column;
+            padding: 20px;
         }
         .message {
             font-size: 2em;
@@ -24,38 +25,17 @@
             padding: 15px;
             border-radius: 15px;
             margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeIn 2s forwards;
         }
-        .container {
-            position: relative;
-        }
-        .hearts {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        .heart {
-            position: absolute;
-            bottom: 0;
-            width: 20px;
-            height: 20px;
-            background-color: red;
-            clip-path: polygon(50% 0%, 100% 30%, 80% 100%, 50% 80%, 20% 100%, 0% 30%);
-            opacity: 0.7;
-            animation: float 4s linear infinite;
-        }
-        @keyframes float {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh);
-                opacity: 0;
-            }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
         .buttons {
             margin-top: 20px;
+            display: none;
         }
         .btn {
             background: #ff4081;
@@ -67,51 +47,67 @@
             border-radius: 10px;
             cursor: pointer;
             transition: 0.3s;
+            display: block;
+            width: 80%;
+            max-width: 300px;
+            opacity: 0;
         }
         .btn:hover {
             background: #e91e63;
         }
+        .heart {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            clip-path: polygon(50% 0%, 100% 30%, 80% 100%, 50% 80%, 20% 100%, 0% 30%);
+            opacity: 0.7;
+            animation: float 6s linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="message" id="message"></div>
-        <div class="buttons">
-            <button class="btn" onclick="showMessage('بحبك يا نونو ❤️')">أحلى كلمة</button>
-            <button class="btn" onclick="showMessage('إنتي أحلى حاجة حصلتلي 😍')">سر سعادتي</button>
-            <button class="btn" onclick="showMessage('ربنا يخليكي ليا وميحرمنيش منك 💖')">وعد مني</button>
-        </div>
-        <div class="hearts" id="hearts"></div>
+    <div class="message" id="message"></div>
+    <div class="buttons" id="buttons">
+        <button class="btn" id="btn1" onclick="showMessage('بحبك يا نونو ❤️', 'btn2')">أحلى كلمة</button>
+        <button class="btn" id="btn2" onclick="showMessage('إنتي سر سعادتي 😍', 'btn3')">سر سعادتي</button>
+        <button class="btn" id="btn3" onclick="showMessage('وعد مني، هفضل أحبك العمر كله 💖', null)">وعد مني</button>
     </div>
     
     <script>
-        const message = "عيد فطر سعيد يا نونو!\n\nكل سنة وإنتي طيبة يا نونو ❤️
-إنتي أحلى هدية ربنا رزقني بيها،
-وأتمنى تبقي معايا العمر كله،
-بحبك قد الدنيا ومليون مرة فوقيها 😘";
+        const messageText = "كل سنة وإنتي طيبة يا نونو ❤️\nإنتي أحلى هدية ربنا رزقني بيها،\nوأتمنى تبقي معايا العمر كله،\nبحبك قد الدنيا ومليون مرة فوقيها 😘";
         let i = 0;
+
         function typeWriter() {
-            if (i < message.length) {
-                document.getElementById("message").innerHTML += message.charAt(i);
+            if (i < messageText.length) {
+                document.getElementById("message").innerHTML += messageText.charAt(i);
                 i++;
-                setTimeout(typeWriter, 200);
+                setTimeout(typeWriter, 150);
+            } else {
+                document.getElementById("buttons").style.display = "block";
+                fadeInButton("btn1");
             }
         }
-        typeWriter();
-
-        function createHeart() {
-            const heart = document.createElement("div");
-            heart.classList.add("heart");
-            heart.style.left = Math.random() * 100 + "vw";
-            heart.style.animationDuration = Math.random() * 3 + 4 + "s";
-            document.getElementById("hearts").appendChild(heart);
-            setTimeout(() => heart.remove(), 4000);
+        
+        function fadeInButton(buttonId) {
+            let button = document.getElementById(buttonId);
+            button.style.opacity = "1";
+            button.style.animation = "fadeIn 1.5s forwards";
         }
-        setInterval(createHeart, 500);
-
-        function showMessage(msg) {
+        
+        function showMessage(msg, nextButtonId) {
             document.getElementById("message").innerHTML = msg;
+            if (nextButtonId) {
+                setTimeout(() => fadeInButton(nextButtonId), 1000);
+            }
         }
+
+        typeWriter();
     </script>
 </body>
 </html>
