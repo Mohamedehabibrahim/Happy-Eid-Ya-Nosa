@@ -72,11 +72,16 @@
     </style>
 </head>
 <body>
+    <audio autoplay>
+        <source src="https://example.com/hayat-alroh.mp3" type="audio/mpeg">
+        متصفحك لا يدعم تشغيل الصوت.
+    </audio>
     <div class="message" id="message"></div>
     <div class="buttons" id="buttons">
         <button class="btn" id="btn1" onclick="showMessage('بحبك يا نونو ❤️', 'btn2')">أحلى كلمة</button>
         <button class="btn" id="btn2" onclick="showMessage('إنتي سر سعادتي 😍', 'btn3')">سر سعادتي</button>
-        <button class="btn" id="btn3" onclick="showMessage('وعد مني، هفضل أحبك العمر كله 💖', null)">وعد مني</button>
+        <button class="btn" id="btn3" onclick="showMessage('وعد مني، هفضل أحبك العمر كله 💖', 'btn4')">وعد مني</button>
+        <button class="btn" id="btn4" onclick="showMessage('العيدية جاية في السكة 🤑🎁', null)">العيدية 🎉</button>
     </div>
     
     <script>
