@@ -77,15 +77,18 @@
     <div class="container">
         <div class="message" id="message"></div>
         <div class="buttons">
-            <button class="btn" onclick="showMessage('بحبك يا نونو ❤️')">رسالة 1</button>
-            <button class="btn" onclick="showMessage('إنتي أحلى حاجة حصلتلي 😍')">رسالة 2</button>
-            <button class="btn" onclick="showMessage('ربنا يخليكي ليا وميحرمنيش منك 💖')">رسالة 3</button>
+            <button class="btn" onclick="showMessage('بحبك يا نونو ❤️')">أحلى كلمة</button>
+            <button class="btn" onclick="showMessage('إنتي أحلى حاجة حصلتلي 😍')">سر سعادتي</button>
+            <button class="btn" onclick="showMessage('ربنا يخليكي ليا وميحرمنيش منك 💖')">وعد مني</button>
         </div>
         <div class="hearts" id="hearts"></div>
     </div>
     
     <script>
-        const message = "عيد فطر سعيد يا نهاد!\n\nبحبك أوي وأتمنى ليكي سعادة مفيهاش نهاية ❤️";
+        const message = "عيد فطر سعيد يا نونو!\n\nكل سنة وإنتي طيبة يا نونو ❤️
+إنتي أحلى هدية ربنا رزقني بيها،
+وأتمنى تبقي معايا العمر كله،
+بحبك قد الدنيا ومليون مرة فوقيها 😘";
         let i = 0;
         function typeWriter() {
             if (i < message.length) {
