@@ -7,84 +7,103 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 p-6">
-  <h1 class="text-3xl font-bold mb-6 text-center">Hotjar Session Dashboard</h1>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white p-4 rounded-2xl shadow">
-      <h2 class="text-xl font-semibold mb-2">Sessions by Country</h2>
-      <canvas id="countryChart"></canvas>
-    </div>
-    <div class="bg-white p-4 rounded-2xl shadow">
-      <h2 class="text-xl font-semibold mb-2">Sessions by Device</h2>
-      <canvas id="deviceChart"></canvas>
-    </div>
-    <div class="bg-white p-4 rounded-2xl shadow">
-      <h2 class="text-xl font-semibold mb-2">New vs Returning Users</h2>
-      <canvas id="userTypeChart"></canvas>
-    </div>
-    <div class="bg-white p-4 rounded-2xl shadow">
-      <h2 class="text-xl font-semibold mb-2">Browser Usage</h2>
-      <canvas id="browserChart"></canvas>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">Sessions by Country</h2>
+        <canvas id="countryChart" height="200"></canvas>
+      </div>
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">Sessions by Device</h2>
+        <canvas id="deviceChart" height="200"></canvas>
+      </div>
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">New vs Returning Users</h2>
+        <canvas id="userTypeChart" height="200"></canvas>
+      </div>
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">Browser Usage</h2>
+        <canvas id="browserChart" height="200"></canvas>
+      </div>
     </div>
   </div>
 
   <script>
-    // رابط Google Sheets بصيغة CSV
     const csvURL = 'https://docs.google.com/spreadsheets/d/1meJNzgq95an4YlsRdCHsToGx1sf9js7OEWr1LFG8JMw/gviz/tq?tqx=out:csv';
 
-    // استخدم PapaParse لقراءة البيانات
     Papa.parse(csvURL, {
       download: true,
+      header: true,
       complete: function(results) {
         const data = results.data;
-
-        // استخراج البيانات
         const countryData = {};
         const deviceData = {};
         const userTypeData = {};
         const browserData = {};
 
-        // معالجة البيانات
         data.forEach(row => {
-          const country = row[0]; // عمود البلد
-          const device = row[1];  // عمود الجهاز
-          const userType = row[2]; // عمود نوع المستخدم
-          const browser = row[3]; // عمود المتصفح
+          const country = row['Country'] || 'Unknown';
+          const device = row['Device'] || 'Unknown';
+          const userType = row['User Type'] || 'Unknown';
+          const browser = row['Browser'] || 'Unknown';
 
-          // تكرار البيانات لكل عمود
           countryData[country] = (countryData[country] || 0) + 1;
           deviceData[device] = (deviceData[device] || 0) + 1;
           userTypeData[userType] = (userTypeData[userType] || 0) + 1;
           browserData[browser] = (browserData[browser] || 0) + 1;
         });
 
-        // رسم الرسوم البيانية
-        renderChart('countryChart', Object.keys(countryData), Object.values(countryData));
-        renderChart('deviceChart', Object.keys(deviceData), Object.values(deviceData));
-        renderChart('userTypeChart', Object.keys(userTypeData), Object.values(userTypeData), 'pie', ['#10b981', '#f97316']);
-        renderChart('browserChart', Object.keys(browserData), Object.values(browserData), 'doughnut', ['#3b82f6', '#6366f1', '#8b5cf6', '#ec4899']);
+        renderChart('countryChart', countryData);
+        renderChart('deviceChart', deviceData);
+        renderChart('userTypeChart', userTypeData, 'pie');
+        renderChart('browserChart', browserData, 'doughnut');
       }
     });
 
-    // دالة لرسم الرسوم البيانية
-    function renderChart(ctxId, labels, data, type = 'bar', backgroundColors = []) {
-      const ctx = document.getElementById(ctxId).getContext('2d');
+    function renderChart(id, dataObj, type = 'bar') {
+      const ctx = document.getElementById(id).getContext('2d');
       new Chart(ctx, {
-        type,
+        type: type,
         data: {
-          labels,
+          labels: Object.keys(dataObj),
           datasets: [{
             label: '',
-            data,
-            backgroundColor: backgroundColors.length ? backgroundColors : 'rgba(59, 130, 246, 0.7)',
+            data: Object.values(dataObj),
+            backgroundColor: [
+              '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+              '#8B5CF6', '#EC4899', '#22D3EE', '#64748B'
+            ],
             borderRadius: 8
           }]
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false } }
+          plugins: {
+            legend: {
+              display: type !== 'bar'
+            }
+          },
+          scales: type === 'bar' ? {
+            y: {
+              beginAtZero: true
+            }
+          } : {}
         }
       });
     }
