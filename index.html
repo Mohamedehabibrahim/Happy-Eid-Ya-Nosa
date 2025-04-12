@@ -20,11 +20,34 @@
     .card:hover {
       transform: translateY(-5px);
     }
+    .kpi {
+      @apply text-2xl font-bold text-blue-700;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
   <div class="max-w-7xl mx-auto">
     <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">Total Sessions</div>
+        <div class="kpi" id="kpi-sessions">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">Unique Countries</div>
+        <div class="kpi" id="kpi-countries">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">Device Types</div>
+        <div class="kpi" id="kpi-devices">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">Browsers</div>
+        <div class="kpi" id="kpi-browsers">-</div>
+      </div>
+    </div>
 
     <!-- Dashboard Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
@@ -47,9 +70,15 @@
     </div>
 
     <!-- Full Table View -->
-    <div class="card">
+    <div class="card mb-10">
       <h2 class="text-2xl font-semibold mb-4 text-gray-800">🔍 Full Data Table</h2>
       <div id="data-table"></div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="card">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Quick Insights</h2>
+      <ul class="list-disc list-inside text-gray-700" id="summary-list"></ul>
     </div>
   </div>
 
@@ -60,15 +89,62 @@
       download: true,
       header: true,
       complete: function(results) {
-        const data = results.data;
+        const data = results.data.filter(row => Object.values(row).some(x => x !== ''));
 
         const countryData = {};
         const deviceData = {};
         const userTypeData = {};
         const browserData = {};
 
+        const countriesSet = new Set();
+        const devicesSet = new Set();
+        const browsersSet = new Set();
+
         const tableHeaders = Object.keys(data[0]);
         const tableRows = data.map(row => tableHeaders.map(h => row[h] || ''));
+
+        // KPIs
+        document.getElementById('kpi-sessions').innerText = data.length;
+
+        data.forEach(row => {
+          const country = row['Country'] || 'Unknown';
+          const device = row['Device'] || 'Unknown';
+          const userType = row['User Type'] || 'Unknown';
+          const browser = row['Browser'] || 'Unknown';
+
+          countryData[country] = (countryData[country] || 0) + 1;
+          deviceData[device] = (deviceData[device] || 0) + 1;
+          userTypeData[userType] = (userTypeData[userType] || 0) + 1;
+          browserData[browser] = (browserData[browser] || 0) + 1;
+
+          countriesSet.add(country);
+          devicesSet.add(device);
+          browsersSet.add(browser);
+        });
+
+        document.getElementById('kpi-countries').innerText = countriesSet.size;
+        document.getElementById('kpi-devices').innerText = devicesSet.size;
+        document.getElementById('kpi-browsers').innerText = browsersSet.size;
+
+        // Summary list
+        const summary = [
+          `تم تسجيل ${data.length} جلسة.`,
+          `تمت الزيارات من ${countriesSet.size} دولة مختلفة.`,
+          `تم استخدام ${devicesSet.size} نوع جهاز مختلف للوصول إلى الموقع.`,
+          `أكثر المتصفحات استخدامًا: ${Object.entries(browserData).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x => x[0]).join(', ')}.`
+        ];
+
+        const ul = document.getElementById('summary-list');
+        summary.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          ul.appendChild(li);
+        });
+
+        renderChart('countryChart', countryData);
+        renderChart('deviceChart', deviceData);
+        renderChart('userTypeChart', userTypeData, 'pie');
+        renderChart('browserChart', browserData, 'doughnut');
 
         // Render Grid.js Table
         new gridjs.Grid({
@@ -93,23 +169,6 @@
             }
           }
         }).render(document.getElementById('data-table'));
-
-        data.forEach(row => {
-          const country = row['Country'] || 'Unknown';
-          const device = row['Device'] || 'Unknown';
-          const userType = row['User Type'] || 'Unknown';
-          const browser = row['Browser'] || 'Unknown';
-
-          countryData[country] = (countryData[country] || 0) + 1;
-          deviceData[device] = (deviceData[device] || 0) + 1;
-          userTypeData[userType] = (userTypeData[userType] || 0) + 1;
-          browserData[browser] = (browserData[browser] || 0) + 1;
-        });
-
-        renderChart('countryChart', countryData);
-        renderChart('deviceChart', deviceData);
-        renderChart('userTypeChart', userTypeData, 'pie');
-        renderChart('browserChart', browserData, 'doughnut');
       }
     });
 
