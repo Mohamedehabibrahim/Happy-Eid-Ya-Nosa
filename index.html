@@ -27,7 +27,7 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
   <div class="max-w-7xl mx-auto">
-    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
+    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 تحليل بيانات زيارات متجر البر بالغالة عن 2024</h1>
 
     <!-- KPIs -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
@@ -76,14 +76,21 @@
     </div>
 
     <!-- Summary Section -->
-    <div class="card">
+    <div class="card mb-10">
       <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Quick Insights</h2>
       <ul class="list-disc list-inside text-gray-700" id="summary-list"></ul>
+    </div>
+
+    <!-- Share Section -->
+    <div class="card">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">🔗 مشاركة العرض التفاعلي</h2>
+      <p class="text-gray-700">يمكنك مشاركة هذا الرابط للاطلاع على البيانات مباشرة:</p>
+      <a href="https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU" target="_blank" class="text-blue-600 underline break-words">https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU</a>
     </div>
   </div>
 
   <script>
-    const csvURL = 'https://docs.google.com/spreadsheets/d/1meJNzgq95an4YlsRdCHsToGx1sf9js7OEWr1LFG8JMw/gviz/tq?tqx=out:csv';
+    const csvURL = 'https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/gviz/tq?tqx=out:csv';
 
     Papa.parse(csvURL, {
       download: true,
