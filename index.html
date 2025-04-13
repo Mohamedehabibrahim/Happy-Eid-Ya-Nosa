@@ -54,18 +54,22 @@
       <div class="card">
         <h2 class="text-lg font-semibold mb-3 text-gray-700">Sessions by Country</h2>
         <canvas id="countryChart" height="200"></canvas>
+        <p id="insight-country" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
         <h2 class="text-lg font-semibold mb-3 text-gray-700">Sessions by Device</h2>
         <canvas id="deviceChart" height="200"></canvas>
+        <p id="insight-device" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
         <h2 class="text-lg font-semibold mb-3 text-gray-700">New vs Returning Users</h2>
         <canvas id="userTypeChart" height="200"></canvas>
+        <p id="insight-userType" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
         <h2 class="text-lg font-semibold mb-3 text-gray-700">Browser Usage</h2>
         <canvas id="browserChart" height="200"></canvas>
+        <p id="insight-browser" class="text-sm text-gray-600 mt-4"></p>
       </div>
     </div>
 
@@ -153,6 +157,11 @@
         renderChart('userTypeChart', userTypeData, 'pie');
         renderChart('browserChart', browserData, 'doughnut');
 
+        document.getElementById('insight-country').textContent = `أعلى دولة من حيث الجلسات: ${getTopEntry(countryData)}`;
+        document.getElementById('insight-device').textContent = `الجهاز الأكثر استخدامًا: ${getTopEntry(deviceData)}`;
+        document.getElementById('insight-userType').textContent = `أكثر المستخدمين: ${getTopEntry(userTypeData)}`;
+        document.getElementById('insight-browser').textContent = `المتصفح الأكثر استخدامًا: ${getTopEntry(browserData)}`;
+
         // Render Grid.js Table
         new gridjs.Grid({
           columns: tableHeaders,
@@ -209,6 +218,11 @@
           } : {}
         }
       });
+    }
+
+    function getTopEntry(obj) {
+      const sorted = Object.entries(obj).sort((a, b) => b[1] - a[1]);
+      return sorted.length > 0 ? `${sorted[0][0]} (${sorted[0][1]})` : 'غير متوفر';
     }
   </script>
 </body>
