@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hotjar Dashboard</title>
+  <title>لوحة تحكم Hotjar</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
@@ -27,47 +27,53 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
   <div class="max-w-7xl mx-auto">
-    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
+    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 لوحة تحكم Hotjar التفاعلية</h1>
 
     <!-- KPIs -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
       <div class="card text-center">
-        <div class="text-sm text-gray-500">Total Sessions</div>
+        <div class="text-sm text-gray-500">إجمالي الجلسات</div>
         <div class="kpi" id="kpi-sessions">-</div>
       </div>
       <div class="card text-center">
-        <div class="text-sm text-gray-500">Unique Countries</div>
+        <div class="text-sm text-gray-500">عدد الدول</div>
         <div class="kpi" id="kpi-countries">-</div>
       </div>
       <div class="card text-center">
-        <div class="text-sm text-gray-500">Device Types</div>
+        <div class="text-sm text-gray-500">أنواع الأجهزة</div>
         <div class="kpi" id="kpi-devices">-</div>
       </div>
       <div class="card text-center">
-        <div class="text-sm text-gray-500">Browsers</div>
+        <div class="text-sm text-gray-500">المتصفحات</div>
         <div class="kpi" id="kpi-browsers">-</div>
       </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-10">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">🎯 فلترة حسب التاريخ</h2>
+      <input type="date" id="date-filter" class="border border-gray-300 rounded p-2" />
     </div>
 
     <!-- Dashboard Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
       <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">Sessions by Country</h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">الجلسات حسب الدولة</h2>
         <canvas id="countryChart" height="200"></canvas>
         <p id="insight-country" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">Sessions by Device</h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">الجلسات حسب الجهاز</h2>
         <canvas id="deviceChart" height="200"></canvas>
         <p id="insight-device" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">New vs Returning Users</h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">مستخدم جديد مقابل عائد</h2>
         <canvas id="userTypeChart" height="200"></canvas>
         <p id="insight-userType" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">Browser Usage</h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">استخدام المتصفحات</h2>
         <canvas id="browserChart" height="200"></canvas>
         <p id="insight-browser" class="text-sm text-gray-600 mt-4"></p>
       </div>
@@ -75,13 +81,13 @@
 
     <!-- Full Table View -->
     <div class="card mb-10">
-      <h2 class="text-2xl font-semibold mb-4 text-gray-800">🔍 Full Data Table</h2>
+      <h2 class="text-2xl font-semibold mb-4 text-gray-800">🔍 جدول البيانات الكامل</h2>
       <div id="data-table"></div>
     </div>
 
     <!-- Summary Section -->
     <div class="card mb-10">
-      <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Quick Insights</h2>
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 التحليلات المختصرة</h2>
       <ul class="list-disc list-inside text-gray-700" id="summary-list"></ul>
     </div>
 
@@ -96,97 +102,91 @@
   <script>
     const csvURL = 'https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/gviz/tq?tqx=out:csv';
 
-    Papa.parse(csvURL, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const data = results.data.filter(row => Object.values(row).some(x => x !== ''));
+    const filterInput = document.getElementById('date-filter');
+    filterInput.addEventListener('change', () => loadAndRender(filterInput.value));
 
-        const countryData = {};
-        const deviceData = {};
-        const userTypeData = {};
-        const browserData = {};
+    function loadAndRender(dateFilter = '') {
+      Papa.parse(csvURL, {
+        download: true,
+        header: true,
+        fastMode: true,
+        complete: function(results) {
+          const data = results.data.filter(row => Object.values(row).some(x => x !== ''));
+          const filtered = dateFilter ? data.filter(r => (r['Date'] || '').startsWith(dateFilter)) : data;
 
-        const countriesSet = new Set();
-        const devicesSet = new Set();
-        const browsersSet = new Set();
+          const countryData = {};
+          const deviceData = {};
+          const userTypeData = {};
+          const browserData = {};
 
-        const tableHeaders = Object.keys(data[0]);
-        const tableRows = data.map(row => tableHeaders.map(h => row[h] || ''));
+          const countriesSet = new Set();
+          const devicesSet = new Set();
+          const browsersSet = new Set();
 
-        // KPIs
-        document.getElementById('kpi-sessions').innerText = data.length;
+          const tableHeaders = Object.keys(data[0]);
+          const tableRows = filtered.map(row => tableHeaders.map(h => row[h] || ''));
 
-        data.forEach(row => {
-          const country = row['Country'] || 'Unknown';
-          const device = row['Device'] || 'Unknown';
-          const userType = row['User Type'] || 'Unknown';
-          const browser = row['Browser'] || 'Unknown';
+          document.getElementById('kpi-sessions').innerText = filtered.length;
 
-          countryData[country] = (countryData[country] || 0) + 1;
-          deviceData[device] = (deviceData[device] || 0) + 1;
-          userTypeData[userType] = (userTypeData[userType] || 0) + 1;
-          browserData[browser] = (browserData[browser] || 0) + 1;
+          filtered.forEach(row => {
+            const country = row['Country'] || 'غير معروف';
+            const device = row['Device'] || 'غير معروف';
+            const userType = row['User Type'] || 'غير معروف';
+            const browser = row['Browser'] || 'غير معروف';
 
-          countriesSet.add(country);
-          devicesSet.add(device);
-          browsersSet.add(browser);
-        });
+            countryData[country] = (countryData[country] || 0) + 1;
+            deviceData[device] = (deviceData[device] || 0) + 1;
+            userTypeData[userType] = (userTypeData[userType] || 0) + 1;
+            browserData[browser] = (browserData[browser] || 0) + 1;
 
-        document.getElementById('kpi-countries').innerText = countriesSet.size;
-        document.getElementById('kpi-devices').innerText = devicesSet.size;
-        document.getElementById('kpi-browsers').innerText = browsersSet.size;
+            countriesSet.add(country);
+            devicesSet.add(device);
+            browsersSet.add(browser);
+          });
 
-        // Summary list
-        const summary = [
-          `تم تسجيل ${data.length} جلسة.`,
-          `تمت الزيارات من ${countriesSet.size} دولة مختلفة.`,
-          `تم استخدام ${devicesSet.size} نوع جهاز مختلف للوصول إلى الموقع.`,
-          `أكثر المتصفحات استخدامًا: ${Object.entries(browserData).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x => x[0]).join(', ')}.`
-        ];
+          document.getElementById('kpi-countries').innerText = countriesSet.size;
+          document.getElementById('kpi-devices').innerText = devicesSet.size;
+          document.getElementById('kpi-browsers').innerText = browsersSet.size;
 
-        const ul = document.getElementById('summary-list');
-        summary.forEach(item => {
-          const li = document.createElement('li');
-          li.textContent = item;
-          ul.appendChild(li);
-        });
+          document.getElementById('summary-list').innerHTML = '';
+          const summary = [
+            `تم تسجيل ${filtered.length} جلسة.`,
+            `الزيارات من ${countriesSet.size} دولة.`,
+            `تم استخدام ${devicesSet.size} نوع جهاز.`,
+            `أشهر المتصفحات: ${Object.entries(browserData).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x => x[0]).join(', ')}`
+          ];
+          summary.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            document.getElementById('summary-list').appendChild(li);
+          });
 
-        renderChart('countryChart', countryData);
-        renderChart('deviceChart', deviceData);
-        renderChart('userTypeChart', userTypeData, 'pie');
-        renderChart('browserChart', browserData, 'doughnut');
+          renderChart('countryChart', countryData);
+          renderChart('deviceChart', deviceData);
+          renderChart('userTypeChart', userTypeData, 'pie');
+          renderChart('browserChart', browserData, 'doughnut');
 
-        document.getElementById('insight-country').textContent = `أعلى دولة من حيث الجلسات: ${getTopEntry(countryData)}`;
-        document.getElementById('insight-device').textContent = `الجهاز الأكثر استخدامًا: ${getTopEntry(deviceData)}`;
-        document.getElementById('insight-userType').textContent = `أكثر المستخدمين: ${getTopEntry(userTypeData)}`;
-        document.getElementById('insight-browser').textContent = `المتصفح الأكثر استخدامًا: ${getTopEntry(browserData)}`;
+          document.getElementById('insight-country').textContent = `أعلى دولة: ${getTopEntry(countryData)}`;
+          document.getElementById('insight-device').textContent = `الأكثر استخدامًا: ${getTopEntry(deviceData)}`;
+          document.getElementById('insight-userType').textContent = `نوع المستخدم الأعلى: ${getTopEntry(userTypeData)}`;
+          document.getElementById('insight-browser').textContent = `المتصفح الأعلى: ${getTopEntry(browserData)}`;
 
-        // Render Grid.js Table
-        new gridjs.Grid({
-          columns: tableHeaders,
-          data: tableRows,
-          search: true,
-          sort: true,
-          pagination: {
-            limit: 10
-          },
-          style: {
-            table: {
-              border: '1px solid #ccc',
-              width: '100%'
-            },
-            th: {
-              background: '#f1f5f9',
-              textAlign: 'left'
-            },
-            td: {
-              padding: '8px'
+          document.getElementById('data-table').innerHTML = '';
+          new gridjs.Grid({
+            columns: tableHeaders,
+            data: tableRows,
+            search: true,
+            sort: true,
+            pagination: { limit: 10 },
+            style: {
+              table: { border: '1px solid #ccc', width: '100%' },
+              th: { background: '#f1f5f9', textAlign: 'right' },
+              td: { padding: '8px' }
             }
-          }
-        }).render(document.getElementById('data-table'));
-      }
-    });
+          }).render(document.getElementById('data-table'));
+        }
+      });
+    }
 
     function renderChart(id, dataObj, type = 'bar') {
       const ctx = document.getElementById(id).getContext('2d');
@@ -206,16 +206,8 @@
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: {
-              display: type !== 'bar'
-            }
-          },
-          scales: type === 'bar' ? {
-            y: {
-              beginAtZero: true
-            }
-          } : {}
+          plugins: { legend: { display: type !== 'bar' } },
+          scales: type === 'bar' ? { y: { beginAtZero: true } } : {}
         }
       });
     }
@@ -224,6 +216,9 @@
       const sorted = Object.entries(obj).sort((a, b) => b[1] - a[1]);
       return sorted.length > 0 ? `${sorted[0][0]} (${sorted[0][1]})` : 'غير متوفر';
     }
+
+    // Initial load
+    loadAndRender();
   </script>
 </body>
 </html>
