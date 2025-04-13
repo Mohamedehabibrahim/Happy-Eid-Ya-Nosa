@@ -31,7 +31,7 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
   <div class="max-w-7xl mx-auto">
-    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 تحليل بيانات الزائرين لجمعية البر بالغالة</h1>
+    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
 
     <!-- KPIs -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
@@ -52,6 +52,9 @@
         <div class="kpi" id="kpi-browsers">-</div>
       </div>
     </div>
+
+    <!-- Detailed KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10" id="detailed-kpis"></div>
 
     <!-- Additional View KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
@@ -174,21 +177,40 @@
 
         const summary = document.getElementById("summary-list");
         const sessions = data.length;
-        const countries = new Set(data.map(d => d.Country || d.Location)).size;
-        const devices = new Set(data.map(d => d.Device)).size;
-        const browsers = new Set(data.map(d => d.Browser)).size;
+        const countries = [...new Set(data.map(d => d.Country || d.Location))];
+        const devices = [...new Set(data.map(d => d.Device))];
+        const browsers = [...new Set(data.map(d => d.Browser))];
+        const newVisitors = data.filter(d => d.VisitorType === 'New').length;
 
         document.getElementById("kpi-sessions").textContent = sessions;
-        document.getElementById("kpi-countries").textContent = countries;
-        document.getElementById("kpi-devices").textContent = devices;
-        document.getElementById("kpi-browsers").textContent = browsers;
+        document.getElementById("kpi-countries").textContent = countries.length;
+        document.getElementById("kpi-devices").textContent = devices.length;
+        document.getElementById("kpi-browsers").textContent = browsers.length;
 
         summary.innerHTML = `
           <li>Total Sessions: ${sessions}</li>
-          <li>Countries: ${countries}</li>
-          <li>Device Types: ${devices}</li>
-          <li>Browsers: ${browsers}</li>
+          <li>Countries: ${countries.length}</li>
+          <li>Device Types: ${devices.length}</li>
+          <li>Browsers: ${browsers.length}</li>
+          <li>New Visitors: ${newVisitors}</li>
         `;
+
+        // Add detailed KPI cards
+        const kpiContainer = document.getElementById("detailed-kpis");
+
+        countries.forEach(c => {
+          kpiContainer.innerHTML += `<div class='card text-center'><div class='kpi-label'>Country</div><div class='kpi'>${c}</div></div>`;
+        });
+
+        devices.forEach(d => {
+          kpiContainer.innerHTML += `<div class='card text-center'><div class='kpi-label'>Device</div><div class='kpi'>${d}</div></div>`;
+        });
+
+        browsers.forEach(b => {
+          kpiContainer.innerHTML += `<div class='card text-center'><div class='kpi-label'>Browser</div><div class='kpi'>${b}</div></div>`;
+        });
+
+        kpiContainer.innerHTML += `<div class='card text-center'><div class='kpi-label'>New Visitors</div><div class='kpi'>${newVisitors}</div></div>`;
 
         // Device Pie Chart
         const deviceCounts = {};
