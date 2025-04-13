@@ -103,12 +103,6 @@
       <div id="data-table"></div>
     </div>
 
-    <!-- Summary Section -->
-    <div class="card mb-10">
-      <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Summary Insights</h2>
-      <ul class="list-disc list-inside text-gray-700" id="summary-list"></ul>
-    </div>
-
     <!-- Branding Section -->
     <div class="text-center text-sm text-gray-500 mt-10">
       Built by <a href="https://github.com/eljojo7" target="_blank" class="text-blue-500 hover:underline">@eljojo7</a>
@@ -117,6 +111,7 @@
 
   <!-- JS -->
   <script>
+    // Fetch data from Hotjar (CSV)
     fetch("https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv")
       .then(res => res.text())
       .then(csv => {
@@ -175,6 +170,26 @@
         renderPie("deviceChart", Object.keys(deviceCount), Object.values(deviceCount));
         renderPie("browserChart", Object.keys(browserCount), Object.values(browserCount));
         renderPie("visitorChart", Object.keys(visitorCount), Object.values(visitorCount));
+      });
+
+    // Fetch Snapchat data (CSV)
+    fetch("https://docs.google.com/spreadsheets/d/15c4NSZUQn_NKEYDv4i7EwEMohWhqqwRgFK_FvJgD-pw/export?format=csv")
+      .then(res => res.text())
+      .then(csv => {
+        const parsed = Papa.parse(csv, { header: true });
+        const snapchatData = parsed.data;
+        const snapchatImpressions = snapchatData.reduce((acc, row) => acc + (parseInt(row["Paid Impressions"]) || 0), 0);
+        document.getElementById("kpi-snapchat").textContent = snapchatImpressions;
+      });
+
+    // Fetch TikTok data (CSV)
+    fetch("https://docs.google.com/spreadsheets/d/1pxNZzHKHFrfnAMHwNMmAPKY0PIR7Gn_bRYevC746n8Y/export?format=csv")
+      .then(res => res.text())
+      .then(csv => {
+        const parsed = Papa.parse(csv, { header: true });
+        const tiktokData = parsed.data;
+        const tiktokImpressions = tiktokData.reduce((acc, row) => acc + (parseInt(row["Impressions"]) || 0), 0);
+        document.getElementById("kpi-tiktok").textContent = tiktokImpressions;
       });
   </script>
 </body>
