@@ -27,7 +27,7 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
   <div class="max-w-7xl mx-auto">
-    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 تقرير تحليل بيانات البر بالغالة </h1>
+    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
 
     <!-- KPIs -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
@@ -61,6 +61,22 @@
       </div>
     </div>
 
+    <!-- New Cards: Countries, Devices, New Visitors -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">Countries</div>
+        <div class="kpi" id="kpi-countries-new">Loading...</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">Device Types</div>
+        <div class="kpi" id="kpi-devices-new">Loading...</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">New Visitors</div>
+        <div class="kpi" id="kpi-new-visitors">Loading...</div>
+      </div>
+    </div>
+
     <!-- Snapchat & TikTok Charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
       <div class="card">
@@ -73,12 +89,6 @@
       </div>
     </div>
 
-    <!-- Device Type Distribution Chart -->
-    <div class="card mb-10">
-      <h2 class="text-xl font-semibold mb-3 text-gray-700">📊 Device Type Distribution</h2>
-      <canvas id="deviceChart"></canvas>
-    </div>
-
     <!-- Full Table View -->
     <div class="card mb-10">
       <h2 class="text-2xl font-semibold mb-4 text-gray-800">🔍 Full Data Table</h2>
@@ -89,6 +99,13 @@
     <div class="card mb-10">
       <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Summary Insights</h2>
       <ul class="list-disc list-inside text-gray-700" id="summary-list"></ul>
+    </div>
+
+    <!-- Share Section -->
+    <div class="card mb-10">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">🔗 Share Dashboard</h2>
+      <p class="text-gray-700">You can share this link to view the data directly:</p>
+      <a href="https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU" target="_blank" class="text-blue-600 underline break-words">https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU</a>
     </div>
 
     <!-- Branding Section -->
@@ -154,6 +171,7 @@
     fetchCSVImpressions("https://docs.google.com/spreadsheets/d/15c4NSZUQn_NKEYDv4i7EwEMohWhqqwRgFK_FvJgD-pw/export?format=csv", "مرات الظهور المدفوعة", "kpi-snapchat", "snapchatChart");
     fetchCSVImpressions("https://docs.google.com/spreadsheets/d/1pxNZzHKHFrfnAMHwNMmAPKY0PIR7Gn_bRYevC746n8Y/export?format=csv", "Impressions", "kpi-tiktok", "tiktokChart");
 
+    // Load Hotjar Data Table from Primary Sheet
     fetch("https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv")
       .then(response => response.text())
       .then(csv => {
@@ -168,57 +186,13 @@
           sort: true
         }).render(document.getElementById("data-table"));
 
+        // Optional summary logic
         const summary = document.getElementById("summary-list");
-        const sessions = data.length;
-        const countries = new Set(data.map(d => d.Country || d.Location)).size;
-        const devices = new Set(data.map(d => d.Device)).size;
-        const browsers = new Set(data.map(d => d.Browser)).size;
-
-        document.getElementById("kpi-sessions").textContent = sessions;
-        document.getElementById("kpi-countries").textContent = countries;
-        document.getElementById("kpi-devices").textContent = devices;
-        document.getElementById("kpi-browsers").textContent = browsers;
-
         summary.innerHTML = `
-          <li>Total Sessions: ${sessions}</li>
-          <li>Countries: ${countries}</li>
-          <li>Device Types: ${devices}</li>
-          <li>Browsers: ${browsers}</li>
+          <li>Total Sessions: ${data.length}</li>
+          <li>Number of Countries: ${new Set(data.map(row => row.Country)).size}</li>
+          <li>Device Types: ${new Set(data.map(row => row.Device)).size}</li>
         `;
-
-        // Device Pie Chart
-        const deviceCounts = {};
-        data.forEach(row => {
-          const type = row.Device || "Unknown";
-          deviceCounts[type] = (deviceCounts[type] || 0) + 1;
-        });
-        const deviceLabels = Object.keys(deviceCounts);
-        const deviceValues = Object.values(deviceCounts);
-
-        new Chart(document.getElementById("deviceChart"), {
-          type: 'pie',
-          data: {
-            labels: deviceLabels,
-            datasets: [{
-              data: deviceValues,
-              backgroundColor: [
-                '#60a5fa',
-                '#34d399',
-                '#fbbf24',
-                '#f87171',
-                '#a78bfa'
-              ]
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }
-        });
       });
   </script>
 </body>
