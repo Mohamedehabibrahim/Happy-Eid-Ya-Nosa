@@ -73,6 +73,12 @@
       </div>
     </div>
 
+    <!-- Device Type Distribution Chart -->
+    <div class="card mb-10">
+      <h2 class="text-xl font-semibold mb-3 text-gray-700">📊 Device Type Distribution</h2>
+      <canvas id="deviceChart"></canvas>
+    </div>
+
     <!-- Full Table View -->
     <div class="card mb-10">
       <h2 class="text-2xl font-semibold mb-4 text-gray-800">🔍 Full Data Table</h2>
@@ -83,13 +89,6 @@
     <div class="card mb-10">
       <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Summary Insights</h2>
       <ul class="list-disc list-inside text-gray-700" id="summary-list"></ul>
-    </div>
-
-    <!-- Share Section -->
-    <div class="card mb-10">
-      <h2 class="text-xl font-semibold mb-2 text-gray-800">🔗 Share Dashboard</h2>
-      <p class="text-gray-700">You can share this link to view the data directly:</p>
-      <a href="https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU" target="_blank" class="text-blue-600 underline break-words">https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU</a>
     </div>
 
     <!-- Branding Section -->
@@ -155,7 +154,6 @@
     fetchCSVImpressions("https://docs.google.com/spreadsheets/d/15c4NSZUQn_NKEYDv4i7EwEMohWhqqwRgFK_FvJgD-pw/export?format=csv", "مرات الظهور المدفوعة", "kpi-snapchat", "snapchatChart");
     fetchCSVImpressions("https://docs.google.com/spreadsheets/d/1pxNZzHKHFrfnAMHwNMmAPKY0PIR7Gn_bRYevC746n8Y/export?format=csv", "Impressions", "kpi-tiktok", "tiktokChart");
 
-    // Load Hotjar Data Table from Primary Sheet
     fetch("https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv")
       .then(response => response.text())
       .then(csv => {
@@ -170,7 +168,6 @@
           sort: true
         }).render(document.getElementById("data-table"));
 
-        // Optional summary logic
         const summary = document.getElementById("summary-list");
         const sessions = data.length;
         const countries = new Set(data.map(d => d.Country || d.Location)).size;
@@ -188,6 +185,40 @@
           <li>Device Types: ${devices}</li>
           <li>Browsers: ${browsers}</li>
         `;
+
+        // Device Pie Chart
+        const deviceCounts = {};
+        data.forEach(row => {
+          const type = row.Device || "Unknown";
+          deviceCounts[type] = (deviceCounts[type] || 0) + 1;
+        });
+        const deviceLabels = Object.keys(deviceCounts);
+        const deviceValues = Object.values(deviceCounts);
+
+        new Chart(document.getElementById("deviceChart"), {
+          type: 'pie',
+          data: {
+            labels: deviceLabels,
+            datasets: [{
+              data: deviceValues,
+              backgroundColor: [
+                '#60a5fa',
+                '#34d399',
+                '#fbbf24',
+                '#f87171',
+                '#a78bfa'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
       });
   </script>
 </body>
