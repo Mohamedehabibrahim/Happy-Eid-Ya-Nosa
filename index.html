@@ -8,24 +8,33 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="css/styles.css" rel="stylesheet" />
   <style>
-    .card {
+    .summary-section h3 {
+      color: #1E40AF;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .summary-section ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .summary-section li {
+      margin-bottom: 0.5rem;
+      color: #4B5563;
+    }
+    .summary-section strong {
+      color: #1F2937;
+      font-weight: 600;
+    }
+    .data-table-container {
+      margin-top: 2rem;
+      padding: 1rem;
       background: white;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    .kpi {
-      @apply text-2xl font-bold text-blue-700;
-    }
-    .kpi-label {
-      font-size: 0.875rem;
-      color: #6B7280;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
   </style>
 </head>
@@ -34,7 +43,7 @@
     <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
 
     <!-- KPIs -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+    <div class="grid grid-cols-2 md:grid-cols-8 gap-6 mb-10">
       <div class="card text-center">
         <div class="kpi-label">Total Sessions</div>
         <div class="kpi" id="kpi-sessions">-</div>
@@ -51,58 +60,82 @@
         <div class="kpi-label">Browsers</div>
         <div class="kpi" id="kpi-browsers">-</div>
       </div>
-    </div>
-
-    <!-- Detailed KPI Cards with Charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-      <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">🌍 Most Frequent Countries</h2>
-        <canvas id="countryChart"></canvas>
-      </div>
-      <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">🖥️ Device Type Distribution</h2>
-        <canvas id="deviceChart"></canvas>
-      </div>
-      <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">🌐 Browsers Used</h2>
-        <canvas id="browserChart"></canvas>
-      </div>
-      <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">👤 Visitor Types</h2>
-        <canvas id="visitorChart"></canvas>
-      </div>
-    </div>
-
-    <!-- Additional View KPIs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
       <div class="card text-center">
-        <div class="kpi-label">Snapchat Impressions</div>
-        <div class="kpi" id="kpi-snapchat">Loading...</div>
+        <div class="kpi-label">New Visitors</div>
+        <div class="kpi" id="kpi-new-visitors">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">Returning Visitors</div>
+        <div class="kpi" id="kpi-returning-visitors">-</div>
       </div>
       <div class="card text-center">
         <div class="kpi-label">TikTok Impressions</div>
-        <div class="kpi" id="kpi-tiktok">Loading...</div>
+        <div class="kpi" id="kpi-tiktok">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">Snapchat Impressions</div>
+        <div class="kpi" id="kpi-snapchat">-</div>
       </div>
     </div>
 
-    <!-- Snapchat & TikTok Charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-      <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">📈 Snapchat Impressions Chart</h2>
-        <canvas id="snapchatChart"></canvas>
+    <!-- Charts Grid -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h2 class="chart-title">🌍 Most Frequent Countries</h2>
+        <div class="chart-container">
+          <canvas id="countryChart"></canvas>
+        </div>
       </div>
-      <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">📈 TikTok Impressions Chart</h2>
-        <canvas id="tiktokChart"></canvas>
+      <div class="chart-card">
+        <h2 class="chart-title">🖥️ Device Type Distribution</h2>
+        <div class="chart-container">
+          <canvas id="deviceChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2 class="chart-title">🌐 Browsers Used</h2>
+        <div class="chart-container">
+          <canvas id="browserChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2 class="chart-title">👤 Visitor Types</h2>
+        <div class="chart-container">
+          <canvas id="visitorChart"></canvas>
+        </div>
       </div>
     </div>
 
+<<<<<<< Updated upstream
    
+=======
+    <!-- Social Media Charts -->
+    <div class="social-charts">
+      <div class="chart-card">
+        <h2 class="chart-title">📈 TikTok Impressions</h2>
+        <div class="chart-container">
+          <canvas id="tiktokChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2 class="chart-title">📈 Snapchat Impressions</h2>
+        <div class="chart-container">
+          <canvas id="snapchatChart"></canvas>
+        </div>
+      </div>
+    </div>
+>>>>>>> Stashed changes
 
     <!-- Summary Section -->
     <div class="card mb-10">
       <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Summary Insights</h2>
-      <ul class="list-disc list-inside text-gray-700" id="summary-list"></ul>
+      <div id="summary-list"></div>
+    </div>
+
+    <!-- Full Data Table -->
+    <div class="data-table-container">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">🔍 Full Data Table</h2>
+      <div id="data-table"></div>
     </div>
 
     <!-- Branding Section -->
@@ -111,67 +144,6 @@
     </div>
   </div>
 
-  <!-- JS -->
-  <script>
-    fetch("https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv")
-      .then(res => res.text())
-      .then(csv => {
-        const parsed = Papa.parse(csv, { header: true });
-        const data = parsed.data.filter(row => Object.values(row).some(val => val));
-
-        const sessions = data.length;
-        const countries = data.map(d => d.Country || d.Location);
-        const devices = data.map(d => d.Device);
-        const browsers = data.map(d => d.Browser);
-        const visitors = data.map(d => d.VisitorType);
-
-        const countOccurrences = arr => {
-          return arr.reduce((acc, val) => {
-            acc[val] = (acc[val] || 0) + 1;
-            return acc;
-          }, {});
-        };
-
-        const renderPie = (id, labels, dataSet) => {
-          new Chart(document.getElementById(id), {
-            type: 'pie',
-            data: {
-              labels: labels,
-              datasets: [{
-                data: dataSet,
-                backgroundColor: ['#60a5fa', '#34d399', '#fbbf24', '#f87171', '#a78bfa', '#f472b6', '#facc15']
-              }]
-            },
-            options: {
-              responsive: true,
-              plugins: { legend: { position: 'bottom' } }
-            }
-          });
-        };
-
-        const countryCount = countOccurrences(countries);
-        const deviceCount = countOccurrences(devices);
-        const browserCount = countOccurrences(browsers);
-        const visitorCount = countOccurrences(visitors);
-
-        document.getElementById("kpi-sessions").textContent = sessions;
-        document.getElementById("kpi-countries").textContent = Object.keys(countryCount).length;
-        document.getElementById("kpi-devices").textContent = Object.keys(deviceCount).length;
-        document.getElementById("kpi-browsers").textContent = Object.keys(browserCount).length;
-
-        document.getElementById("summary-list").innerHTML = `
-          <li>Total Sessions: ${sessions}</li>
-          <li>Countries: ${Object.keys(countryCount).length}</li>
-          <li>Device Types: ${Object.keys(deviceCount).length}</li>
-          <li>Browsers: ${Object.keys(browserCount).length}</li>
-          <li>New Visitors: ${visitorCount['New'] || 0}</li>
-        `;
-
-        renderPie("countryChart", Object.keys(countryCount), Object.values(countryCount));
-        renderPie("deviceChart", Object.keys(deviceCount), Object.values(deviceCount));
-        renderPie("browserChart", Object.keys(browserCount), Object.values(browserCount));
-        renderPie("visitorChart", Object.keys(visitorCount), Object.values(visitorCount));
-      });
-  </script>
+  <script src="js/script.js"></script>
 </body>
 </html>
