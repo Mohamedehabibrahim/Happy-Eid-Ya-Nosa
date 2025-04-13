@@ -31,7 +31,7 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
   <div class="max-w-7xl mx-auto">
-    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 تحليل بيانات الزائرين لجمعية البر بالغالة</h1>
+    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
 
     <!-- KPIs -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
@@ -53,8 +53,25 @@
       </div>
     </div>
 
-    <!-- Detailed KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10" id="detailed-kpis"></div>
+    <!-- Detailed KPI Cards with Charts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">🌍 Most Frequent Countries</h2>
+        <canvas id="countryChart"></canvas>
+      </div>
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">🖥️ Device Type Distribution</h2>
+        <canvas id="deviceChart"></canvas>
+      </div>
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">🌐 Browsers Used</h2>
+        <canvas id="browserChart"></canvas>
+      </div>
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">👤 Visitor Types</h2>
+        <canvas id="visitorChart"></canvas>
+      </div>
+    </div>
 
     <!-- Additional View KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
@@ -80,12 +97,6 @@
       </div>
     </div>
 
-    <!-- Device Type Distribution Chart -->
-    <div class="card mb-10">
-      <h2 class="text-xl font-semibold mb-3 text-gray-700">📊 Device Type Distribution</h2>
-      <canvas id="deviceChart"></canvas>
-    </div>
-
     <!-- Full Table View -->
     <div class="card mb-10">
       <h2 class="text-2xl font-semibold mb-4 text-gray-800">🔍 Full Data Table</h2>
@@ -106,145 +117,64 @@
 
   <!-- JS -->
   <script>
-    async function fetchCSVImpressions(url, columnName, elementId, chartId) {
-      const response = await fetch(url);
-      const csvText = await response.text();
-      const parsed = Papa.parse(csvText, { header: true });
-      let sum = 0;
-      const labels = [];
-      const values = [];
-
-      parsed.data.forEach(row => {
-        const val = parseInt(row[columnName]?.replace(/,/g, ''));
-        if (!isNaN(val)) {
-          sum += val;
-          labels.push(row.Date || row.Week || "");
-          values.push(val);
-        }
-      });
-
-      document.getElementById(elementId).textContent = sum.toLocaleString();
-
-      if (chartId) {
-        new Chart(document.getElementById(chartId), {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: columnName,
-              data: values,
-              borderColor: 'rgba(59, 130, 246, 1)',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              tension: 0.3,
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: false }
-            },
-            scales: {
-              y: {
-                ticks: {
-                  callback: function (value) {
-                    return value.toLocaleString();
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
-    }
-
-    fetchCSVImpressions("https://docs.google.com/spreadsheets/d/15c4NSZUQn_NKEYDv4i7EwEMohWhqqwRgFK_FvJgD-pw/export?format=csv", "مرات الظهور المدفوعة", "kpi-snapchat", "snapchatChart");
-    fetchCSVImpressions("https://docs.google.com/spreadsheets/d/1pxNZzHKHFrfnAMHwNMmAPKY0PIR7Gn_bRYevC746n8Y/export?format=csv", "Impressions", "kpi-tiktok", "tiktokChart");
-
     fetch("https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv")
-      .then(response => response.text())
+      .then(res => res.text())
       .then(csv => {
         const parsed = Papa.parse(csv, { header: true });
         const data = parsed.data.filter(row => Object.values(row).some(val => val));
-        const columns = Object.keys(parsed.data[0] || {}).map(col => ({ name: col }));
-        new gridjs.Grid({
-          columns,
-          data: data.map(row => columns.map(col => row[col.name] || "")),
-          pagination: true,
-          search: true,
-          sort: true
-        }).render(document.getElementById("data-table"));
 
-        const summary = document.getElementById("summary-list");
         const sessions = data.length;
-        const countries = [...new Set(data.map(d => d.Country || d.Location))];
-        const devices = [...new Set(data.map(d => d.Device))];
-        const browsers = [...new Set(data.map(d => d.Browser))];
-        const newVisitors = data.filter(d => d.VisitorType === 'New').length;
+        const countries = data.map(d => d.Country || d.Location);
+        const devices = data.map(d => d.Device);
+        const browsers = data.map(d => d.Browser);
+        const visitors = data.map(d => d.VisitorType);
+
+        const countOccurrences = arr => {
+          return arr.reduce((acc, val) => {
+            acc[val] = (acc[val] || 0) + 1;
+            return acc;
+          }, {});
+        };
+
+        const renderPie = (id, labels, dataSet) => {
+          new Chart(document.getElementById(id), {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{
+                data: dataSet,
+                backgroundColor: ['#60a5fa', '#34d399', '#fbbf24', '#f87171', '#a78bfa', '#f472b6', '#facc15']
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { position: 'bottom' } }
+            }
+          });
+        };
+
+        const countryCount = countOccurrences(countries);
+        const deviceCount = countOccurrences(devices);
+        const browserCount = countOccurrences(browsers);
+        const visitorCount = countOccurrences(visitors);
 
         document.getElementById("kpi-sessions").textContent = sessions;
-        document.getElementById("kpi-countries").textContent = countries.length;
-        document.getElementById("kpi-devices").textContent = devices.length;
-        document.getElementById("kpi-browsers").textContent = browsers.length;
+        document.getElementById("kpi-countries").textContent = Object.keys(countryCount).length;
+        document.getElementById("kpi-devices").textContent = Object.keys(deviceCount).length;
+        document.getElementById("kpi-browsers").textContent = Object.keys(browserCount).length;
 
-        summary.innerHTML = `
+        document.getElementById("summary-list").innerHTML = `
           <li>Total Sessions: ${sessions}</li>
-          <li>Countries: ${countries.length}</li>
-          <li>Device Types: ${devices.length}</li>
-          <li>Browsers: ${browsers.length}</li>
-          <li>New Visitors: ${newVisitors}</li>
+          <li>Countries: ${Object.keys(countryCount).length}</li>
+          <li>Device Types: ${Object.keys(deviceCount).length}</li>
+          <li>Browsers: ${Object.keys(browserCount).length}</li>
+          <li>New Visitors: ${visitorCount['New'] || 0}</li>
         `;
 
-        // Add detailed KPI cards
-        const kpiContainer = document.getElementById("detailed-kpis");
-
-        countries.forEach(c => {
-          kpiContainer.innerHTML += `<div class='card text-center'><div class='kpi-label'>Country</div><div class='kpi'>${c}</div></div>`;
-        });
-
-        devices.forEach(d => {
-          kpiContainer.innerHTML += `<div class='card text-center'><div class='kpi-label'>Device</div><div class='kpi'>${d}</div></div>`;
-        });
-
-        browsers.forEach(b => {
-          kpiContainer.innerHTML += `<div class='card text-center'><div class='kpi-label'>Browser</div><div class='kpi'>${b}</div></div>`;
-        });
-
-        kpiContainer.innerHTML += `<div class='card text-center'><div class='kpi-label'>New Visitors</div><div class='kpi'>${newVisitors}</div></div>`;
-
-        // Device Pie Chart
-        const deviceCounts = {};
-        data.forEach(row => {
-          const type = row.Device || "Unknown";
-          deviceCounts[type] = (deviceCounts[type] || 0) + 1;
-        });
-        const deviceLabels = Object.keys(deviceCounts);
-        const deviceValues = Object.values(deviceCounts);
-
-        new Chart(document.getElementById("deviceChart"), {
-          type: 'pie',
-          data: {
-            labels: deviceLabels,
-            datasets: [{
-              data: deviceValues,
-              backgroundColor: [
-                '#60a5fa',
-                '#34d399',
-                '#fbbf24',
-                '#f87171',
-                '#a78bfa'
-              ]
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }
-        });
+        renderPie("countryChart", Object.keys(countryCount), Object.values(countryCount));
+        renderPie("deviceChart", Object.keys(deviceCount), Object.values(deviceCount));
+        renderPie("browserChart", Object.keys(browserCount), Object.values(browserCount));
+        renderPie("visitorChart", Object.keys(visitorCount), Object.values(visitorCount));
       });
   </script>
 </body>
