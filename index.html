@@ -184,29 +184,26 @@
         document.getElementById("kpi-browsers-chart").textContent = Object.keys(browserCount)[0]; // Most used browser
       });
 
-    // New Visitors
-    fetch("https://docs.google.com/spreadsheets/d/1pxNZzHKHFrfnAMHwNMmAPKY0PIR7Gn_bRYevC746n8Y/export?format=csv")
+    // Fetch Snapchat Views
+    fetch("https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv")
       .then(res => res.text())
       .then(csv => {
         const parsed = Papa.parse(csv, { header: true });
-        const rows = parsed.data.filter(r => r["VisitorType"] === "New");
-        const newVisitors = rows.length;
+        const data = parsed.data;
+        const snapchatViews = data.reduce((total, row) => total + (row["Snapchat Views"] ? parseInt(row["Snapchat Views"]) : 0), 0);
 
-        document.getElementById("kpi-new-visitors").textContent = newVisitors;
-      });
-
-    // Fetch Snapchat Views
-    fetch("https://api.example.com/snapchat-views")
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("kpi-snapchat-views").textContent = data.views;
+        document.getElementById("kpi-snapchat-views").textContent = snapchatViews;
       });
 
     // Fetch TikTok Views
-    fetch("https://api.example.com/tiktok-views")
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("kpi-tiktok-views").textContent = data.views;
+    fetch("https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv")
+      .then(res => res.text())
+      .then(csv => {
+        const parsed = Papa.parse(csv, { header: true });
+        const data = parsed.data;
+        const tiktokViews = data.reduce((total, row) => total + (row["TikTok Views"] ? parseInt(row["TikTok Views"]) : 0), 0);
+
+        document.getElementById("kpi-tiktok-views").textContent = tiktokViews;
       });
   </script>
 </body>
