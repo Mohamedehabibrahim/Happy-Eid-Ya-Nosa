@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ber-Algalh Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+  <link href="css/styles.css" rel="stylesheet" />
+  <style>
+    .summary-section h3 {
+      color: #1E40AF;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .summary-section ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .summary-section li {
+      margin-bottom: 0.5rem;
+      color: #4B5563;
+    }
+    .summary-section strong {
+      color: #1F2937;
+      font-weight: 600;
+    }
+    .data-table-container {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 mBer-Algalh Dashboard</h1>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-2 md:grid-cols-8 gap-6 mb-10">
+      <div class="card text-center">
+        <div class="kpi-label">Total Sessions</div>
+        <div class="kpi" id="kpi-sessions">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">Countries</div>
+        <div class="kpi" id="kpi-countries">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">Device Types</div>
+        <div class="kpi" id="kpi-devices">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">Browsers</div>
+        <div class="kpi" id="kpi-browsers">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">New Visitors</div>
+        <div class="kpi" id="kpi-new-visitors">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">Returning Visitors</div>
+        <div class="kpi" id="kpi-returning-visitors">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">TikTok Impressions</div>
+        <div class="kpi" id="kpi-tiktok">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">Snapchat Impressions</div>
+        <div class="kpi" id="kpi-snapchat">-</div>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h2 class="chart-title">🌍 Most Frequent Countries</h2>
+        <div class="chart-container">
+          <canvas id="countryChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2 class="chart-title">🖥️ Device Type Distribution</h2>
+        <div class="chart-container">
+          <canvas id="deviceChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2 class="chart-title">🌐 Browsers Used</h2>
+        <div class="chart-container">
+          <canvas id="browserChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2 class="chart-title">👤 Visitor Types</h2>
+        <div class="chart-container">
+          <canvas id="visitorChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Media Charts -->
+    <div class="social-charts">
+      <div class="chart-card">
+        <h2 class="chart-title">📈 TikTok Impressions</h2>
+        <div class="chart-container">
+          <canvas id="tiktokChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2 class="chart-title">📈 Snapchat Impressions</h2>
+        <div class="chart-container">
+          <canvas id="snapchatChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="card mb-10">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Summary Insights</h2>
+      <div id="summary-list"></div>
+    </div>
+
+    <!-- Branding Section -->
+    <div class="text-center text-sm text-gray-500 mt-10">
+      Built by <a href="https://github.com/eljojo7" target="_blank" class="text-blue-500 hover:underline">@M.ehab</a>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
