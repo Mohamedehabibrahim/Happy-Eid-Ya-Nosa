@@ -229,42 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update summary section
         document.getElementById("summary-list").innerHTML = summaryHTML;
 
-        // Create and render the full data table
-        new gridjs.Grid({
-            columns: [
-                { name: 'Date', sort: true },
-                { name: 'Country', sort: true },
-                { name: 'Device', sort: true },
-                { name: 'Browser', sort: true },
-                { name: 'Visitor Type', sort: true }
-            ],
-            data: visitorsData.map(row => [
-                row.Date || row.Timestamp || 'N/A',
-                row.Country || row.Location || 'Unknown',
-                row.Device || 'Unknown',
-                normalizeBrowser(row.Browser),
-                row[visitorTypeColumn] || 'Unknown'
-            ]),
-            search: true,
-            pagination: {
-                limit: 10
-            },
-            sort: true,
-            style: {
-                table: {
-                    width: '100%'
-                },
-                th: {
-                    'background-color': '#f3f4f6',
-                    color: '#374151',
-                    'font-weight': '600',
-                    padding: '12px'
-                },
-                td: {
-                    padding: '12px'
-                }
-            }
-        }).render(document.getElementById("data-table"));
+        
 
         // Render all charts (existing code remains the same)
         renderPie("countryChart", Object.keys(countryCount), Object.values(countryCount));
