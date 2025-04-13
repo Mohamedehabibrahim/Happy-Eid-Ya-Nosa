@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة تحكم Hotjar</title>
+  <title>Hotjar Interactive Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
@@ -27,60 +27,72 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 p-8 font-sans">
   <div class="max-w-7xl mx-auto">
-    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 لوحة تحكم Hotjar التفاعلية</h1>
+    <h1 class="text-4xl font-bold mb-10 text-center text-blue-900">📊 Hotjar Interactive Dashboard</h1>
 
-    <!-- رابط تحميل -->
+    <!-- Download Link -->
     <div class="card mb-6">
-      <h2 class="text-xl font-semibold mb-2 text-gray-800">⬇️ تحميل البيانات كـ CSV</h2>
-      <p class="text-gray-700 mb-2">يمكنك تحميل البيانات الأصلية واستعراضها على جهازك:</p>
-      <a href="https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv" target="_blank" class="text-blue-600 underline">تحميل ملف CSV</a>
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">⬇️ Download Data as CSV</h2>
+      <p class="text-gray-700 mb-2">You can download and view the original dataset:</p>
+      <a href="https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv" target="_blank" class="text-blue-600 underline">Download CSV File</a>
     </div>
 
     <!-- KPIs -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
       <div class="card text-center">
-        <div class="text-sm text-gray-500">إجمالي الجلسات</div>
+        <div class="text-sm text-gray-500">Total Sessions</div>
         <div class="kpi" id="kpi-sessions">-</div>
       </div>
       <div class="card text-center">
-        <div class="text-sm text-gray-500">عدد الدول</div>
+        <div class="text-sm text-gray-500">Countries</div>
         <div class="kpi" id="kpi-countries">-</div>
       </div>
       <div class="card text-center">
-        <div class="text-sm text-gray-500">أنواع الأجهزة</div>
+        <div class="text-sm text-gray-500">Device Types</div>
         <div class="kpi" id="kpi-devices">-</div>
       </div>
       <div class="card text-center">
-        <div class="text-sm text-gray-500">المتصفحات</div>
+        <div class="text-sm text-gray-500">Browsers</div>
         <div class="kpi" id="kpi-browsers">-</div>
+      </div>
+    </div>
+
+    <!-- Additional View KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">Snapchat Impressions</div>
+        <div class="kpi" id="kpi-snapchat">Loading...</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-sm text-gray-500">TikTok Impressions</div>
+        <div class="kpi" id="kpi-tiktok">Loading...</div>
       </div>
     </div>
 
     <!-- Filter Section -->
     <div class="card mb-10">
-      <h2 class="text-xl font-semibold mb-4 text-gray-800">🎯 فلترة حسب التاريخ</h2>
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">🎯 Filter by Date</h2>
       <input type="date" id="date-filter" class="border border-gray-300 rounded p-2" />
     </div>
 
-    <!-- Dashboard Cards -->
+    <!-- Dashboard Charts -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
       <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">الجلسات حسب الدولة</h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">Sessions by Country</h2>
         <canvas id="countryChart" height="200"></canvas>
         <p id="insight-country" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">الجلسات حسب الجهاز</h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">Sessions by Device</h2>
         <canvas id="deviceChart" height="200"></canvas>
         <p id="insight-device" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">مستخدم جديد مقابل عائد</h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">New vs Returning Users</h2>
         <canvas id="userTypeChart" height="200"></canvas>
         <p id="insight-userType" class="text-sm text-gray-600 mt-4"></p>
       </div>
       <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">استخدام المتصفحات</h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-700">Browser Usage</h2>
         <canvas id="browserChart" height="200"></canvas>
         <p id="insight-browser" class="text-sm text-gray-600 mt-4"></p>
       </div>
@@ -88,35 +100,51 @@
 
     <!-- Full Table View -->
     <div class="card mb-10">
-      <h2 class="text-2xl font-semibold mb-4 text-gray-800">🔍 جدول البيانات الكامل</h2>
+      <h2 class="text-2xl font-semibold mb-4 text-gray-800">🔍 Full Data Table</h2>
       <div id="data-table"></div>
     </div>
 
     <!-- Summary Section -->
     <div class="card mb-10">
-      <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 التحليلات المختصرة</h2>
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Summary Insights</h2>
       <ul class="list-disc list-inside text-gray-700" id="summary-list"></ul>
     </div>
 
     <!-- Share Section -->
     <div class="card mb-10">
-      <h2 class="text-xl font-semibold mb-2 text-gray-800">🔗 مشاركة العرض التفاعلي</h2>
-      <p class="text-gray-700">يمكنك مشاركة هذا الرابط للاطلاع على البيانات مباشرة:</p>
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">🔗 Share Dashboard</h2>
+      <p class="text-gray-700">You can share this link to view the data directly:</p>
       <a href="https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU" target="_blank" class="text-blue-600 underline break-words">https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU</a>
     </div>
 
     <!-- Branding Section -->
     <div class="text-center text-sm text-gray-500 mt-10">
-      تم التنفيذ بواسطة <a href="https://github.com/eljojo7" target="_blank" class="text-blue-500 hover:underline">@eljojo7</a>
+      Built by <a href="https://github.com/eljojo7" target="_blank" class="text-blue-500 hover:underline">@eljojo7</a>
     </div>
   </div>
 
-  <!-- JavaScript -->
+  <!-- JS -->
   <script>
     document.getElementById("date-filter").addEventListener("change", function() {
       const selectedDate = this.value;
-      alert("تم اختيار التاريخ: " + selectedDate);
+      alert("Selected date: " + selectedDate);
     });
+
+    // Load Snapchat & TikTok Impressions
+    async function fetchCSVImpressions(url, columnName, elementId) {
+      const response = await fetch(url);
+      const csvText = await response.text();
+      const parsed = Papa.parse(csvText, { header: true });
+      let sum = 0;
+      parsed.data.forEach(row => {
+        const val = parseInt(row[columnName].replace(/,/g, ''));
+        if (!isNaN(val)) sum += val;
+      });
+      document.getElementById(elementId).textContent = sum.toLocaleString();
+    }
+
+    fetchCSVImpressions("https://docs.google.com/spreadsheets/d/15c4NSZUQn_NKEYDv4i7EwEMohWhqqwRgFK_FvJgD-pw/export?format=csv", "مرات الظهور المدفوعة", "kpi-snapchat");
+    fetchCSVImpressions("https://docs.google.com/spreadsheets/d/1pxNZzHKHFrfnAMHwNMmAPKY0PIR7Gn_bRYevC746n8Y/export?format=csv", "Impressions", "kpi-tiktok");
   </script>
 </body>
 </html>
