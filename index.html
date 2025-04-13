@@ -154,6 +154,41 @@
 
     fetchCSVImpressions("https://docs.google.com/spreadsheets/d/15c4NSZUQn_NKEYDv4i7EwEMohWhqqwRgFK_FvJgD-pw/export?format=csv", "مرات الظهور المدفوعة", "kpi-snapchat", "snapchatChart");
     fetchCSVImpressions("https://docs.google.com/spreadsheets/d/1pxNZzHKHFrfnAMHwNMmAPKY0PIR7Gn_bRYevC746n8Y/export?format=csv", "Impressions", "kpi-tiktok", "tiktokChart");
+
+    // Load Hotjar Data Table from Primary Sheet
+    fetch("https://docs.google.com/spreadsheets/d/1AUCjeT7bjq1SsCPkMP9YqgeANNQGYJeRyquAaKNk_KU/export?format=csv")
+      .then(response => response.text())
+      .then(csv => {
+        const parsed = Papa.parse(csv, { header: true });
+        const data = parsed.data.filter(row => Object.values(row).some(val => val));
+        const columns = Object.keys(parsed.data[0] || {}).map(col => ({ name: col }));
+        new gridjs.Grid({
+          columns,
+          data: data.map(row => columns.map(col => row[col.name] || "")),
+          pagination: true,
+          search: true,
+          sort: true
+        }).render(document.getElementById("data-table"));
+
+        // Optional summary logic
+        const summary = document.getElementById("summary-list");
+        const sessions = data.length;
+        const countries = new Set(data.map(d => d.Country || d.Location)).size;
+        const devices = new Set(data.map(d => d.Device)).size;
+        const browsers = new Set(data.map(d => d.Browser)).size;
+
+        document.getElementById("kpi-sessions").textContent = sessions;
+        document.getElementById("kpi-countries").textContent = countries;
+        document.getElementById("kpi-devices").textContent = devices;
+        document.getElementById("kpi-browsers").textContent = browsers;
+
+        summary.innerHTML = `
+          <li>Total Sessions: ${sessions}</li>
+          <li>Countries: ${countries}</li>
+          <li>Device Types: ${devices}</li>
+          <li>Browsers: ${browsers}</li>
+        `;
+      });
   </script>
 </body>
 </html>
