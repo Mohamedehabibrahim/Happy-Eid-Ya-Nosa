@@ -111,9 +111,12 @@
     </div>
   </div>
 
-  <!-- JavaScript remains unchanged -->
+  <!-- JavaScript -->
   <script>
-    // same JavaScript logic here...
+    document.getElementById("date-filter").addEventListener("change", function() {
+      const selectedDate = this.value;
+      alert("تم اختيار التاريخ: " + selectedDate);
+    });
   </script>
 </body>
 </html>
