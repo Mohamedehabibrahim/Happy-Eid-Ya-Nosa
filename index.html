@@ -53,27 +53,42 @@
       </div>
     </div>
 
-    <!-- Snapchat & TikTok View KPIs -->
+    <!-- Additional KPIs and Charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <!-- Country with pie chart -->
       <div class="card text-center">
-        <div class="kpi-label">Snapchat Impressions</div>
-        <div class="kpi" id="kpi-snapchat">Loading...</div>
+        <div class="kpi-label">Most Used Country</div>
+        <div class="kpi" id="kpi-country">-</div>
+        <canvas id="countryChart"></canvas>
       </div>
+      <!-- Operating System with pie chart -->
       <div class="card text-center">
-        <div class="kpi-label">TikTok Impressions</div>
-        <div class="kpi" id="kpi-tiktok">Loading...</div>
+        <div class="kpi-label">Operating Systems</div>
+        <div class="kpi" id="kpi-os">-</div>
+        <canvas id="osChart"></canvas>
       </div>
     </div>
 
-    <!-- Snapchat & TikTok Charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-      <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">📈 Snapchat Impressions Chart</h2>
-        <canvas id="snapchatChart"></canvas>
+      <!-- Device Types with pie chart -->
+      <div class="card text-center">
+        <div class="kpi-label">Device Types</div>
+        <div class="kpi" id="kpi-device-types">-</div>
+        <canvas id="deviceChart"></canvas>
       </div>
-      <div class="card">
-        <h2 class="text-lg font-semibold mb-3 text-gray-700">📈 TikTok Impressions Chart</h2>
-        <canvas id="tiktokChart"></canvas>
+      <!-- Browsers with pie chart -->
+      <div class="card text-center">
+        <div class="kpi-label">Browsers</div>
+        <div class="kpi" id="kpi-browsers-chart">-</div>
+        <canvas id="browserChart"></canvas>
+      </div>
+    </div>
+
+    <!-- New Visitors -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="card text-center">
+        <div class="kpi-label">New Visitors</div>
+        <div class="kpi" id="kpi-new-visitors">-</div>
       </div>
     </div>
 
@@ -103,6 +118,7 @@
         const countries = data.map(d => d.Country || d.Location);
         const devices = data.map(d => d.Device);
         const browsers = data.map(d => d.Browser);
+        const os = data.map(d => d.OperatingSystem);
         const visitors = data.map(d => d.VisitorType);
 
         const countOccurrences = arr => arr.reduce((acc, val) => {
@@ -113,6 +129,7 @@
         const countryCount = countOccurrences(countries);
         const deviceCount = countOccurrences(devices);
         const browserCount = countOccurrences(browsers);
+        const osCount = countOccurrences(os);
         const visitorCount = countOccurrences(visitors);
 
         const renderPie = (id, labels, dataSet) => {
@@ -129,6 +146,7 @@
           });
         };
 
+        // Set KPIs
         document.getElementById("kpi-sessions").textContent = sessions;
         document.getElementById("kpi-countries").textContent = Object.keys(countryCount).length;
         document.getElementById("kpi-devices").textContent = Object.keys(deviceCount).length;
@@ -141,64 +159,28 @@
           <li>Browsers: ${Object.keys(browserCount).length}</li>
           <li>New Visitors: ${visitorCount['New'] || 0}</li>
         `;
+
+        // Render pie charts for country, OS, device, and browser
+        renderPie('countryChart', Object.keys(countryCount), Object.values(countryCount));
+        renderPie('osChart', Object.keys(osCount), Object.values(osCount));
+        renderPie('deviceChart', Object.keys(deviceCount), Object.values(deviceCount));
+        renderPie('browserChart', Object.keys(browserCount), Object.values(browserCount));
+
+        document.getElementById("kpi-country").textContent = Object.keys(countryCount)[0]; // Most used country
+        document.getElementById("kpi-os").textContent = Object.keys(osCount)[0]; // Most used OS
+        document.getElementById("kpi-device-types").textContent = Object.keys(deviceCount)[0]; // Most used device
+        document.getElementById("kpi-browsers-chart").textContent = Object.keys(browserCount)[0]; // Most used browser
       });
 
-    // Snapchat Data
-    fetch("https://docs.google.com/spreadsheets/d/15c4NSZUQn_NKEYDv4i7EwEMohWhqqwRgFK_FvJgD-pw/export?format=csv")
-      .then(res => res.text())
-      .then(csv => {
-        const parsed = Papa.parse(csv, { header: true });
-        const rows = parsed.data.filter(r => r["مرات الظهور المدفوعة"]);
-        const impressions = rows.map(r => {
-          const impressionValue = parseInt(r["مرات الظهور المدفوعة"].replace(/,/g, '')) || 0;
-          return impressionValue;
-        });
-
-        document.getElementById("kpi-snapchat").textContent = sum(impressions);
-
-        new Chart(document.getElementById("snapchatChart"), {
-          type: 'bar',
-          data: {
-            labels: impressions.map((_, i) => `Ad ${i + 1}`),
-            datasets: [{
-              label: 'Snapchat Impressions',
-              data: impressions,
-              backgroundColor: '#fbbf24'
-            }]
-          },
-          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-        });
-
-        document.getElementById("summary-list").innerHTML += `<li>Total Snapchat Impressions: ${sum(impressions)}</li>`;
-      });
-
-    // TikTok Data
+    // New Visitors
     fetch("https://docs.google.com/spreadsheets/d/1pxNZzHKHFrfnAMHwNMmAPKY0PIR7Gn_bRYevC746n8Y/export?format=csv")
       .then(res => res.text())
       .then(csv => {
         const parsed = Papa.parse(csv, { header: true });
-        const rows = parsed.data.filter(r => r["Impressions"]);
-        const impressions = rows.map(r => {
-          const impressionValue = parseInt(r["Impressions"].replace(/,/g, '')) || 0;
-          return impressionValue;
-        });
+        const rows = parsed.data.filter(r => r["VisitorType"] === "New");
+        const newVisitors = rows.length;
 
-        document.getElementById("kpi-tiktok").textContent = sum(impressions);
-
-        new Chart(document.getElementById("tiktokChart"), {
-          type: 'bar',
-          data: {
-            labels: impressions.map((_, i) => `Ad ${i + 1}`),
-            datasets: [{
-              label: 'TikTok Impressions',
-              data: impressions,
-              backgroundColor: '#4f46e5'
-            }]
-          },
-          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-        });
-
-        document.getElementById("summary-list").innerHTML += `<li>Total TikTok Impressions: ${sum(impressions)}</li>`;
+        document.getElementById("kpi-new-visitors").textContent = newVisitors;
       });
   </script>
 </body>
