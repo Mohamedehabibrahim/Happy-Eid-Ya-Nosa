@@ -92,6 +92,18 @@
       </div>
     </div>
 
+    <!-- Social Media KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="card text-center">
+        <div class="kpi-label">Snapchat Views</div>
+        <div class="kpi" id="kpi-snapchat-views">-</div>
+      </div>
+      <div class="card text-center">
+        <div class="kpi-label">TikTok Views</div>
+        <div class="kpi" id="kpi-tiktok-views">-</div>
+      </div>
+    </div>
+
     <!-- Summary Section -->
     <div class="card mb-10">
       <h2 class="text-xl font-semibold mb-2 text-gray-800">📌 Summary Insights</h2>
@@ -181,6 +193,20 @@
         const newVisitors = rows.length;
 
         document.getElementById("kpi-new-visitors").textContent = newVisitors;
+      });
+
+    // Fetch Snapchat Views
+    fetch("https://api.example.com/snapchat-views")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("kpi-snapchat-views").textContent = data.views;
+      });
+
+    // Fetch TikTok Views
+    fetch("https://api.example.com/tiktok-views")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("kpi-tiktok-views").textContent = data.views;
       });
   </script>
 </body>
